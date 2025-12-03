@@ -3,10 +3,18 @@
 import cron from 'node-cron'
 import fetch from 'node-fetch'
 
-async function createPackage(type) {
+async function createPackage(type, templateId, topic) {
   // call your mega prompt server endpoint - local or deployed
   try {
-    const res = await fetch(process.env.MEGAPROMPT_SERVER_URL + '/generate', { method: 'POST' })
+    const body = { type }
+    if (templateId) body.templateId = templateId
+    if (topic) body.topic = topic
+
+    const res = await fetch(process.env.MEGAPROMPT_SERVER_URL + '/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    })
     const data = await res.json()
     console.info('Generated package:', data)
     return data
